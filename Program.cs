@@ -14,8 +14,13 @@ var jsonSettings = new JsonSerializerOptions
 {
     WriteIndented = true
 };
+if (args.Length != 1)
+{
+    Console.Error.WriteLine($"Usage: <config>");
+    return;
+}
 
-string configFile = args[1];
+string configFile = args[0];
 var feedInfosJson = File.ReadAllText(configFile);
 var feedInfos = JsonSerializer.Deserialize<FeedInfo[]>(feedInfosJson, jsonSettings);
 
