@@ -15,19 +15,18 @@ namespace RssWebhook
     {
         private const string s_timestampFormat = "yyyy-MM-dd HH:mm:ss";
         private static readonly Regex s_htmlTagRegex = new Regex("<[^>]*>", RegexOptions.Compiled);
+        private static XmlSerializer s_serializer = new XmlSerializer(typeof(Feed));
 
         private readonly HttpClient _client;
-        private readonly XmlSerializer _serializer;
 
         public RssWorker()
         {
             _client = new HttpClient();
-            _serializer = new XmlSerializer(typeof(Feed));
         }
 
         public void Dispose()
         {
-            ((IDisposable)_client).Dispose();
+            _client.Dispose();
         }
 
         public async Task RunAsync(FeedInfo[] feeds)
@@ -49,6 +48,12 @@ namespace RssWebhook
                         try
                         {
                             await ProcessItem(feedInfo, feed.Channel, items[i]);
+
+                            if (i != 0)
+                            {
+                                // Stay within webhook ratelimit
+                                await Task.Delay(TimeSpan.FromSeconds(1));
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -67,16 +72,16 @@ namespace RssWebhook
 
         private async Task<Feed> GetFeedAsync(FeedInfo feedInfo)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, feedInfo.FeedUri);
+            using var request = new HttpRequestMessage(HttpMethod.Get, feedInfo.FeedUri);
 
             if (feedInfo.FeedAuth is not null)
                 request.Headers.Authorization = AuthenticationHeaderValue.Parse(feedInfo.FeedAuth);
 
-            var response = await _client.SendAsync(request);
+            using var response = await _client.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
-            var stream = response.Content.ReadAsStream();
-            var feed = (Feed)_serializer.Deserialize(stream)!;
+            using var stream = response.Content.ReadAsStream();
+            var feed = (Feed)s_serializer.Deserialize(stream)!;
 
             return feed;
         }
@@ -108,7 +113,6 @@ namespace RssWebhook
 
             var response = await _client.PostAsync(info.WebhookUri, content);
             response.EnsureSuccessStatusCode();
-            await Task.Delay(TimeSpan.FromSeconds(1));
         }
 
         private static string FormatDescription(string input, int maxLength)
