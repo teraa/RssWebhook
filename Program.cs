@@ -10,6 +10,8 @@ using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
 
+const string timestampFormat = "yyyy-MM-dd HH:mm:ss";
+
 var jsonSettings = new JsonSerializerOptions
 {
     WriteIndented = true
@@ -48,7 +50,7 @@ foreach (var feedInfo in feedInfos!)
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[{DateTimeOffset.Now}] Error processing item {items[i].Guid}\n{ex.Message}");
+                Console.Error.WriteLine($"{DateTimeOffset.Now.ToString(timestampFormat)} Error processing item {items[i].Guid}: {ex.Message}");
             }
         }
 
@@ -56,7 +58,7 @@ foreach (var feedInfo in feedInfos!)
     }
     catch (Exception ex)
     {
-        Console.Error.WriteLine($"[{DateTimeOffset.Now}] Error processing feed {feedInfo.FeedUri}\n{ex.Message}");
+        Console.Error.WriteLine($"{DateTimeOffset.Now.ToString(timestampFormat)} Error processing feed {feedInfo.FeedUri}: {ex.Message}");
     }
 }
 
