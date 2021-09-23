@@ -48,7 +48,7 @@ foreach (var feedInfo in feedInfos!)
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error processing item ({items[i].Guid}): {ex}");
+                Console.Error.WriteLine($"Error processing item ({items[i].Guid}): {ex.Message}");
             }
         }
 
@@ -56,7 +56,7 @@ foreach (var feedInfo in feedInfos!)
     }
     catch (Exception ex)
     {
-        Console.Error.WriteLine($"Error processing feed ({feedInfo.FeedUri}): {ex}");
+        Console.Error.WriteLine($"Error processing feed ({feedInfo.FeedUri}): {ex.Message}");
     }
 }
 
