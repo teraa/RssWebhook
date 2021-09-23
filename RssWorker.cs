@@ -87,19 +87,19 @@ namespace RssWebhook
                 username = channel.Title,
                 embeds = new[]
                 {
-                        new
+                    new
+                    {
+                        title = item.Title,
+                        description = FormatDescription(item.Description, 350),
+                        url = item.Link,
+                        color = 0x00819C,
+                        timestamp = DateTimeOffset.Parse(item.PubDateString).ToString("u"),
+                        footer = new
                         {
-                            title = item.Title,
-                            description = FormatDescription(item.Description, 350),
-                            url = item.Link,
-                            color = 0x00819C,
-                            timestamp = DateTimeOffset.Parse(item.PubDateString).ToString("u"),
-                            footer = new
-                            {
-                                text = $"{item.Category}",
-                            },
-                        }
-                     }
+                            text = $"{item.Category}",
+                        },
+                    }
+                }
             };
 
             var json = JsonSerializer.Serialize(message);
