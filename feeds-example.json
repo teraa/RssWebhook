@@ -1,0 +1,8 @@
+[
+  {
+    "FeedUri": "https://example.com/feed/rss",
+    "FeedAuth": null,
+    "WebhookUri": "https://discord.com/api/webhooks/xx/xx",
+    "LatestGuid": null
+  }
+]
