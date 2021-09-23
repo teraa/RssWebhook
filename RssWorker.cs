@@ -14,6 +14,7 @@ namespace RssWebhook
     class RssWorker : IDisposable
     {
         private const string s_timestampFormat = "yyyy-MM-dd HH:mm:ss";
+        private static readonly Regex s_htmlTagRegex = new Regex("<[^>]*>", RegexOptions.Compiled);
 
         private readonly HttpClient _client;
         private readonly XmlSerializer _serializer;
@@ -112,7 +113,7 @@ namespace RssWebhook
 
         private static string FormatDescription(string input, int maxLength)
         {
-            var result = Regex.Replace(input, "<[^>]*>", "");
+            var result = s_htmlTagRegex.Replace(input, "");
             result = HttpUtility.HtmlDecode(result);
 
             const string suff = "...";
